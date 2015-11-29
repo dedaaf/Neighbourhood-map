@@ -14,14 +14,24 @@
     <!-- custom style sheet -->
     <link rel="stylesheet" type="text/css" href="css/style.css">
 
+    <!--google maps-->
+     <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKrvZMO5CHs_6aQ-tfTqA9_4jGaufmgKY&region=NL">
+  </script>
+
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script   type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"> </script>
 
 
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+    <!--KNOCKOUT -->
+    <script type="text/javascript" src="js/knockout-3.4.0.js"></script>
 
+    <!--custom javascript - my own -->
+    <script type="text/javascript" src="js/app.js" async defer></script>
 
+    <!--some map styling-->
      <style type="text/css">
       html, body { height: 100%; margin: 0; padding: 0; }
       #map { height: 100%; }
@@ -31,7 +41,6 @@
   </head>
   <body>
   <div class="container">
-    <!-- Static navbar -->
     <nav class="navbar navbar-default">
       <div class="container-fluid">
         <div class="navbar-header">
@@ -54,29 +63,24 @@
     </nav>
   </div> <!-- /container -->
 
-    <div class="col-sm-2 results-sidebar">
+    <div class="col-sm-3 results-sidebar">
       <form class="navbar-form">
         Search neighbourhood
-        <input  class="form-control"  type="text"/>
+        <input  class="form-control" placeholder="Search…" type="search" data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off"/>
+
       </form>
-      <ul class="locations" data-bind="foreach: locations">
-        <li data-bind="text: locationName"></li>
+      <ul class="locations list-group" data-bind="foreach: markers">
+        <li class="list-group-item" data-bind="text: locationName"></li>
       </ul>
     </div>
-    <div id="main_content" class="col-sm-10" style="display:block; height: 100%;">
+    <div id="main_content" class="col-sm-9" style="display:block; height: 100%;">
       <div id="map"></div>
     </div>
 
 
-  <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKrvZMO5CHs_6aQ-tfTqA9_4jGaufmgKY&region=NL&callback=mapModel">
-  </script>
+
 
   </body>
 
-    <!--KNOCKOUT -->
-    <script type="text/javascript" src="js/knockout-3.4.0.js"></script>
 
-    <!--custom javascript -->
-    <script type="text/javascript" src="js/app.js" async defer></script>
 </html>
