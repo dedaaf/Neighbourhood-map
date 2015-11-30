@@ -110,24 +110,28 @@ var map;//the MAP (outer scope, google likes it that way)
       self.markers.removeAll();
       self.showMap.setMapOnAll(null); //also remove them from the map
 
-      for(var i=0; i < locations.length; i++) {
-       //iterate through the locations to find the query value (the name of the location)
-        if(locations[i].locationName.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
-          self.markers.push(locations[i]);
-          self.showMap.markerArray[i].setMap(map);
-          self.showMap.markerArray[i].setAnimation(google.maps.Animation.BOUNCE);
-          var marker = self.showMap.markerArray[i];
-          self.showMap.markerArray[i].addListener('click', function(e){
-            unBounce(marker);
-          });
+        for(var i=0; i < locations.length; i++) {
+         //iterate through the locations to find the query value (the name of the location)
+          if(locations[i].locationName.toLowerCase().indexOf(value.toLowerCase()) > 0) {
+            self.markers.push(locations[i]);
+            self.showMap.markerArray[i].setMap(map);
+            self.showMap.markerArray[i].setAnimation(google.maps.Animation.BOUNCE);
 
-        }
-        // else
-        //   //iterate through the locations to find the query value (description in this case)
-        // if(locations[i].description.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
-        //    self.markers.push(locations[i]);
-        // }
-      }//end for
+            var marker = self.showMap.markerArray[i];
+            self.showMap.markerArray[i].addListener('click', function(e){
+              unBounce(marker);
+            });
+
+          }else if(locations[i].locationName.toLowerCase().indexOf(value.toLowerCase()) === 0) {
+            self.markers.push(locations[i]);
+            self.showMap.markerArray[i].setMap(map);
+          }
+          // else
+          //   //iterate through the locations to find the query value (description in this case)
+          // if(locations[i].description.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
+          //    self.markers.push(locations[i]);
+          // }
+        }//end for
     });//end search
 
     //Stop the selected marker from bouncing.
