@@ -1,5 +1,4 @@
 
-
   if (typeof google === 'undefined' || google === null) {
     // variable is undefined or null
     console.log('google is null or undefined');
@@ -92,6 +91,8 @@ var map;//the MAP (outer scope, google likes it that way)
     // Sets the map on all markers in the array.
       for (var i = 0; i < locations.length; i++) {
         self.markerArray[i].setMap(map);
+
+
       }
     };//end setMapOnAll
   }//end mapModel
@@ -114,31 +115,27 @@ var map;//the MAP (outer scope, google likes it that way)
         if(locations[i].locationName.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
           self.markers.push(locations[i]);
           self.showMap.markerArray[i].setMap(map);
+          self.showMap.markerArray[i].setAnimation(google.maps.Animation.BOUNCE);
+          var marker = self.showMap.markerArray[i];
+          self.showMap.markerArray[i].addListener('click', function(e){
+            unBounce(marker);
+          });
+
         }
         // else
         //   //iterate through the locations to find the query value (description in this case)
         // if(locations[i].description.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
         //    self.markers.push(locations[i]);
         // }
-
-
-
       }//end for
     });//end search
 
-  }//end model
+    //Stop the selected marker from bouncing.
+    unBounce = function(marker) {
+         marker.setAnimation(null);
+    };
 
+  }//end model
 
 ko.applyBindings(new displayModel());
 
-
-// Activates knockout.js
-
-//  ko.applyBindings(locationDisplay);
-
-//function to determine the amount of markers
-//
-//
-//
-//
-////search through markers and filter them in a list
