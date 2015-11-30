@@ -88,7 +88,7 @@ var map;//the MAP (outer scope, google likes it that way)
       }
     }),self);//end displayAllMarkers
 
-    var setMapOnAll = function(map){
+    self.setMapOnAll = function(map){
     // Sets the map on all markers in the array.
       for (var i = 0; i < locations.length; i++) {
         self.markerArray[i].setMap(map);
@@ -101,32 +101,29 @@ var map;//the MAP (outer scope, google likes it that way)
 
     self.markers = ko.observableArray(locations.slice(0));
     self.query =  ko.observable('');
-
-
     self.showMap = new mapModel();
 
     //search through the markers in the list
     self.query.subscribe(search = function(value) {
-
-      console.log(mapModel.setMapOnAll);
-      //mapModel.setMapOnAll(null);
-
-
-
       // remove all the current markers, which removes them from the view
       self.markers.removeAll();
+      self.showMap.setMapOnAll(null); //also remove them from the map
 
       for(var i=0; i < locations.length; i++) {
        //iterate through the locations to find the query value (the name of the location)
         if(locations[i].locationName.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
           self.markers.push(locations[i]);
+          self.showMap.markerArray[i].setMap(map);
         }
-        else
-          //iterate through the locations to find the query value (description in this case)
-        if(locations[i].description.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
-           self.markers.push(locations[i]);
-        }
-      }
+        // else
+        //   //iterate through the locations to find the query value (description in this case)
+        // if(locations[i].description.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
+        //    self.markers.push(locations[i]);
+        // }
+
+
+
+      }//end for
     });//end search
 
   }//end model
