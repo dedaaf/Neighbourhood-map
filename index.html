@@ -66,15 +66,15 @@
     <div class="col-sm-3 results-sidebar">
       <form class="navbar-form">
         Search neighbourhood
-        <input  class="form-control" placeholder="Search…" type="search" data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off"/>
+        <input  class="form-control" placeholder="Search…" type="search" data-bind="value: $root.vmDisplay.query, valueUpdate: 'keyup'" autocomplete="off"/>
 
       </form>
-      <ul class="locations list-group" data-bind="foreach: markers">
+      <ul class="locations list-group" data-bind="foreach: $root.vmDisplay.markers">
         <li class="list-group-item" data-bind="text: locationName"></li>
       </ul>
     </div>
     <div id="main_content" class="col-sm-9" style="display:block; height: 100%;">
-      <div id="map" data-bind="click: getPhoto "></div>
+      <div id="map" data-bind="click: $root.getPhoto "></div>
     </div>
 
 

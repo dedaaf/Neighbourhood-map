@@ -128,38 +128,44 @@ function displayModel(){
   });//end search
 }//end model
 
-    self.getPhoto = function(){
-      marker.addListener('click', function(e){
-        var string = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=84f379a6d6c72598796708ae866b0e5f&tags=scheepsvaartmuseum&format=json&nojsoncallback=1&api_sig=e95b1991861af67e24bf233b9848f748";
-        $.getJSON(string, function(data) {
-          // Now use this data to update your view models,
-          // and Knockout will update your UI automatically
-          console.log(data);
+function photoModel(){
+  console.log('test');
+    // marker.addListener('click', function(e){
+    //   var string = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=84f379a6d6c72598796708ae866b0e5f&tags=scheepsvaartmuseum&format=json&nojsoncallback=1&api_sig=e95b1991861af67e24bf233b9848f748";
+    //   $.getJSON(string, function(data) {
+    //     // Now use this data to update your view models,
+    //     // and Knockout will update your UI automatically
+    //     console.log(data);
 
-          jsonFlickrApi(data);
-          function jsonFlickrApi(data){
+    //     jsonFlickrApi(data);
+    //     function jsonFlickrApi(data){
 
-            if (data.stat != "ok"){
-              // something broke!
-              return;
-            }
+    //       if (data.stat != "ok"){
+    //         // something broke!
+    //         return;
+    //       }
 
-            for (var i=0; i<data.photos.photo.length; i++){
+    //       for (var i=0; i<data.photos.photo.length; i++){
 
-              var photo = data.photos.photo[i];
+    //         var photo = data.photos.photo[i];
 
-              var div = document.createElement('div');
-              var photo_img = '<img src="'+ 'https://farm'+ photo.farm +'.staticflickr.com/'+ photo.server +'/'+ photo.id +'_'+ photo.secret +'.jpg'+ '" >';
+    //         var div = document.createElement('div');
+    //         var photo_img = '<img src="'+ 'https://farm'+ photo.farm +'.staticflickr.com/'+ photo.server +'/'+ photo.id +'_'+ photo.secret +'.jpg'+ '" >';
 
-              $(div).append(photo_img);
-              document.body.appendChild(div);
-            }
-          }
-              });
-            });
-    };
+    //         $(div).append(photo_img);
+    //         document.body.appendChild(div);
+    //       }
+    //     }//end jsonFlickrApi
+    //   });//end getJSON
+    // });//end addListener
+}//end getPhoto
 
 
+masterVM = {
+  vmMap : new mapModel(),
+  vmDisplay : new displayModel(),
+  vmPhoto : new photoModel(),
 
-ko.applyBindings(new displayModel());
+};
 
+ko.applyBindings(masterVM);
