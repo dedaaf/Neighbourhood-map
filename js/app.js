@@ -59,7 +59,7 @@ var locations = [
 ];
 
 var map;//the MAP (outer scope, google likes it that way)
-
+var windowOpen = false;
 function mapModel(){
   var self = this;
   var marker;
@@ -85,23 +85,38 @@ function mapModel(){
       });
       self.markerArray.push(marker);//store all the beautiful markers in an array
 
+      console.log(windowOpen);
+        if(windowOpen===false){
+          marker.addListener('click', openWindow(marker));
 
+        }else{
+          removePics();
+        }
 
-      marker.addListener('click', openWindow(i,marker,LatLng, locations[i].locationName));
     }//end for
 
 
   }),self);//end displayAllMarkers
 
-  function openWindow(i, marker,LatLng, locName) {
-      return function(){
-        var infowindow = new google.maps.InfoWindow({
-          content: '<div id="windowTool">'+ randomPhoto(LatLng, locName ) +'</div>'
-        });
-        infowindow.open(map, marker);
-      };
+  function removePics(){
+    console.log(windowOpen);
+    $('#images').empty();
+    windowOpen = false;
   }
 
+  function openWindow(marker) { //open the GM tooltip
+
+    return function(){
+
+      self.infowindow = new google.maps.InfoWindow({
+          content: '<div id="windowTool">'+ marker.title +'</div>'
+      });
+      self.infowindow.open(map, marker);
+      randomPhoto(marker.title);
+
+
+    };
+  }
 
   self.setMapOnAll = function(map){
   // Sets the map on all markers in the array.
@@ -141,14 +156,28 @@ function searchModel(){
     // }//end else
   });//end search
 
+  selectedLoc =  ko.observable(0);
+  self.Lastlocation = ko.observable();
 
+  self.hoverOn = function(location){
+    console.log('yes we have a hover');
+    selectedLoc(1);
+    self.Lastlocation(location);
+     $( 'li#locationItems'  ).addClass( "btn-success");
+  };
 
+self.hoverOff = function(){
+  console.log('just no');
+  selectedLoc(0);
+    //$( 'li#locationItems' ).addClass( "btn-success");
+    self.Lastlocation(' ');
+};
 }//end model
 
-var photo_array = [];
+
 
 //When the users clicks a marker this function is run to display photo's below the map
-function randomPhoto(LatLng, locationName){
+function randomPhoto(locationName){
   var string = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=e291a839000711cc0d54015ed9636d6a&jsoncallback=?';
   //var string = 'https://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?';
 
@@ -163,6 +192,7 @@ function randomPhoto(LatLng, locationName){
       format: 'json'
 
     }, function(data){
+      console.log(data);
         for (var i=0; i<data.photos.photo.length; i++){
           var photo = data.photos.photo[i];
           var photo_img = 'https://farm'+ photo.farm +'.staticflickr.com/'+ photo.server +'/'+ photo.id +'_'+ photo.secret +'.jpg'+ '" >';
@@ -172,12 +202,19 @@ function randomPhoto(LatLng, locationName){
   );//end JSON
 }//end randomPhoto
 
-
+//load all models
 masterVM = {
   vmMap : new mapModel(),
-  vmDisplay : new searchModel(),
+  vmSearch : new searchModel(),
 //  vmPhoto : new photoModel(),
 
 };
 
 ko.applyBindings(masterVM);
+
+$(window).resize(function () { //function to override bootstrap height values
+    var h = $(window).height(),
+        offsetTop = 60; // Calculate the top offset
+
+    $('#map').css('height', (h - offsetTop));
+}).resize();
