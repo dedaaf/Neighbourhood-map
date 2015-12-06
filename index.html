@@ -33,16 +33,14 @@
 
     <!--some map styling-->
      <style type="text/css">
-      html, body { height: 100%; margin: 0; padding: 0; }
-      #map { height: 100%; }
+
     </style>
 
 
   </head>
   <body>
-  <div class="container">
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
             <span class="sr-only">Toggle navigation</span>
@@ -50,7 +48,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">P5 - Neighbourhood Map Project</a>
+         <a class="navbar-brand " href="#">P5 - Neighbourhood Map Project</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
@@ -58,28 +56,38 @@
             <li><a href="#">About</a></li>
             <li><a href="#">Contact</a></li>
           </ul>
+          <p class="navbar-text navbar-right" data-bind="text: $root.vmSearch.Lastlocation"> </p>
+
         </div><!--/.nav-collapse -->
-      </div><!--/.container-fluid -->
+      </div>
     </nav>
-  </div> <!-- /container -->
+    <div class="container theme-showcase" role="main">
+      <div class="row" id="top_row"></div>
+      <div class="row">
+        <div class="col-sm-3 results-sidebar">
+          <form class="navbar-form">
+            Search neighbourhood
+            <input  class="form-control" placeholder="Search…" type="search" data-bind="value: $root.vmSearch.query, valueUpdate: 'keyup'" autocomplete="off"/>
 
-    <div class="col-sm-3 results-sidebar">
-      <form class="navbar-form">
-        Search neighbourhood
-        <input  class="form-control" placeholder="Search…" type="search" data-bind="value: $root.vmDisplay.query, valueUpdate: 'keyup'" autocomplete="off"/>
-
-      </form>
-      <ul class="locations list-group" data-bind="foreach: $root.vmDisplay.markers">
-        <li class="list-group-item" data-bind="text: locationName"></li>
-      </ul>
-    </div>
-    <div id="main_content" class="col-sm-9" style="display:block; height: 100%;">
-      <div id="map" data-bind="click: $root.getPhoto "></div>
-    </div>
-
-
+          </form>
+          <ul class="locations list-group" data-bind="foreach: $root.vmSearch.markers">
+            <li class="list-group-item" id="locationItems"
+            data-bind="
+            text: $data.locationName,
+            css: 'locationItems',
+            event: {mouseover:  $root.vmSearch.hoverOn($data.locationName), mouseout: $root.vmSearch.hoverOff}
 
 
+
+            "></li>
+          </ul>
+        </div>
+        <div id="main_content" class="col-sm-9" style="display:block; height: 100%;">
+          <div id="map" class="col-sm-12"></div>
+          <div id="images"></div>
+        </div>
+      </div><!-- row -->
+    </div><!-- End container -->
   </body>
 
 

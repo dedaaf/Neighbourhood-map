@@ -8,7 +8,7 @@ if (typeof google === 'undefined' || google === null) {
 //different locations hard coded (for now)
 var locations = [
   {
-    locationName: 'Scheepvaarsmuseum',
+    locationName: 'Scheepsvaartmuseum',
     streetName: 'Kattenburgerplein 1',
     zipCode: '1018 KK',
     City: 'Amsterdam',
@@ -62,7 +62,7 @@ var map;//the MAP (outer scope, google likes it that way)
 
 function mapModel(){
   var self = this;
-
+  var marker;
   //the google map centered on my house
   map =  new google.maps.Map(document.getElementById('map'),
                   {
@@ -78,33 +78,47 @@ function mapModel(){
     for(var i =0; i< locations.length; i++){
       var LatLng = {lat: locations[i].Lati, lng: locations[i].Long};
 
-      self.marker = new google.maps.Marker({
+      marker = new google.maps.Marker({//create the markers
           position: LatLng,
           map: map,
           title: locations[i].locationName
       });
-      self.markerArray.push(self.marker);
-    }
+      self.markerArray.push(marker);//store all the beautiful markers in an array
+
+
+
+      marker.addListener('click', openWindow(i,marker,LatLng, locations[i].locationName));
+    }//end for
+
+
   }),self);//end displayAllMarkers
+
+  function openWindow(i, marker,LatLng, locName) {
+      return function(){
+        var infowindow = new google.maps.InfoWindow({
+          content: '<div id="windowTool">'+ randomPhoto(LatLng, locName ) +'</div>'
+        });
+        infowindow.open(map, marker);
+      };
+  }
+
 
   self.setMapOnAll = function(map){
   // Sets the map on all markers in the array.
     for (var i = 0; i < locations.length; i++) {
       self.markerArray[i].setMap(map);
-
-
     }
   };//end setMapOnAll
 }//end mapModel
 
-function displayModel(){
+function searchModel(){
   var self = this;
 
   self.markers = ko.observableArray(locations.slice(0)); //array to hold the locations
   self.query =  ko.observable(''); //oberve the search field
   self.showMap = new mapModel(); //create the map NOW
+  self.marker = null;
 
-  var marker  ;//variable to hold marker
   //search through the markers in the list
   self.query.subscribe(search = function(value) {
     // remove all the current markers, which removes them from the view
@@ -116,8 +130,8 @@ function displayModel(){
         if(locations[i].locationName.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
           self.markers.push(locations[i]);
 
-          marker = self.showMap.markerArray[i]; //get the marker data from the array in the mapModel
-          marker.setMap(map); //set the array
+          self.marker = self.showMap.markerArray[i]; //get the marker data from the array in the mapModel
+          self.marker.setMap(map); //set the array
 
           // if(self.markers.length>=3){ //when the user enter 3 characters we are bouncing the marker
           //   marker.setAnimation(google.maps.Animation.BOUNCE); //animate the array...bounce bounce bounce
@@ -126,45 +140,43 @@ function displayModel(){
       }//end for
     // }//end else
   });//end search
+
+
+
 }//end model
 
-function photoModel(){
-  console.log('test');
-    // marker.addListener('click', function(e){
-    //   var string = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=84f379a6d6c72598796708ae866b0e5f&tags=scheepsvaartmuseum&format=json&nojsoncallback=1&api_sig=e95b1991861af67e24bf233b9848f748";
-    //   $.getJSON(string, function(data) {
-    //     // Now use this data to update your view models,
-    //     // and Knockout will update your UI automatically
-    //     console.log(data);
+var photo_array = [];
 
-    //     jsonFlickrApi(data);
-    //     function jsonFlickrApi(data){
+//When the users clicks a marker this function is run to display photo's below the map
+function randomPhoto(LatLng, locationName){
+  var string = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=e291a839000711cc0d54015ed9636d6a&jsoncallback=?';
+  //var string = 'https://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?';
 
-    //       if (data.stat != "ok"){
-    //         // something broke!
-    //         return;
-    //       }
+  $.getJSON(string,
 
-    //       for (var i=0; i<data.photos.photo.length; i++){
+    {
+      tag: locationName,
+      text: locationName,
+      tagmode: 'any',
+      sort: 'interestingness-desc',
+      per_page : 20,
+      format: 'json'
 
-    //         var photo = data.photos.photo[i];
-
-    //         var div = document.createElement('div');
-    //         var photo_img = '<img src="'+ 'https://farm'+ photo.farm +'.staticflickr.com/'+ photo.server +'/'+ photo.id +'_'+ photo.secret +'.jpg'+ '" >';
-
-    //         $(div).append(photo_img);
-    //         document.body.appendChild(div);
-    //       }
-    //     }//end jsonFlickrApi
-    //   });//end getJSON
-    // });//end addListener
-}//end getPhoto
+    }, function(data){
+        for (var i=0; i<data.photos.photo.length; i++){
+          var photo = data.photos.photo[i];
+          var photo_img = 'https://farm'+ photo.farm +'.staticflickr.com/'+ photo.server +'/'+ photo.id +'_'+ photo.secret +'.jpg'+ '" >';
+          $('<img/>').attr('src', photo_img).appendTo('#images');
+        }//end for
+    }//end function
+  );//end JSON
+}//end randomPhoto
 
 
 masterVM = {
   vmMap : new mapModel(),
-  vmDisplay : new displayModel(),
-  vmPhoto : new photoModel(),
+  vmDisplay : new searchModel(),
+//  vmPhoto : new photoModel(),
 
 };
 
