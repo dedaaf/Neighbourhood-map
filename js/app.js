@@ -1,10 +1,3 @@
-
-if (typeof google === 'undefined' || google === null) {
-  // variable is undefined or null
-  console.log('google is null or undefined');
-}
-
-
 //different locations hard coded (for now)
 var locations = [
   {
@@ -15,6 +8,7 @@ var locations = [
     description: 'Museum about boats and stuff',
     Lati: 52.37170,
     Long: 4.91481,
+    id: 'Scheepsvaartmuseum'
   },
   {
     locationName: 'Natura Artis Magistra',
@@ -24,7 +18,7 @@ var locations = [
     description: 'ZOO',
     Lati: 52.36691,
     Long: 4.91258,
-
+    id: 'Artis'
   },
   {
     locationName: 'Amsterdam Roest',
@@ -34,7 +28,7 @@ var locations = [
     description: 'Cafe & Entertainment',
     Lati: 52.37194,
     Long: 4.92645,
-
+    id: 'Roest'
   },
    {
     locationName: 'BurgerMeester',
@@ -44,7 +38,7 @@ var locations = [
     description: 'Burger restaur',
     Lati: 52.36662,
     Long: 4.91188,
-
+    id: 'BurgerMeester'
   },
    {
     locationName: 'Brouwerij \'t IJ',
@@ -54,55 +48,48 @@ var locations = [
     description: 'Brewery',
     Lati: 52.36670,
     Long: 4.92638,
-
+    id: 'Brouwer-t-ij'
   }
 ];
 
-var map;//the MAP (outer scope, google likes it that way)
-var windowOpen = false;
-function mapModel(){
-  var self = this;
-  var marker;
-  //the google map centered on my house
-  map =  new google.maps.Map(document.getElementById('map'),
+//the google map centered on my house
+var canvasMap =  new google.maps.Map(document.getElementById('map'),
                   {
                       center: {lat: 52.37026, lng: 4.92061},
                       zoom: 15
                   }
   );
 
+function mapModel(){
+  var self = this;
+  self.marker = null;
+
   self.markerArray = [];
-  self.displayAllMarkers = (ko.computed(function(){
+  self.displayAllMarkers = ko.computed(function(){
 
     //loop through the marker objects and print their Longitude and Latitude
     for(var i =0; i< locations.length; i++){
       var LatLng = {lat: locations[i].Lati, lng: locations[i].Long};
 
-      marker = new google.maps.Marker({//create the markers
+       self.marker = new google.maps.Marker({//create the markers
           position: LatLng,
-          map: map,
           title: locations[i].locationName
       });
-      self.markerArray.push(marker);//store all the beautiful markers in an array
 
-      console.log(windowOpen);
-        if(windowOpen===false){
-          marker.addListener('click', openWindow(marker));
+      self.markerArray.push( self.marker);//store all the beautiful markers in an array
 
-        }else{
-          removePics();
-        }
+      self.marker.addListener('click', openWindow(self.marker));
 
     }//end for
+  }, self);//end displayAllMarkers
 
+  self.setAllMarkers = function(map){
+  // Sets the map on all markers in the array.
+    for (var i = 0; i < locations.length; i++) {
+      self.markerArray[i].setMap(map);
+    }
+  };//end setAllMarkers
 
-  }),self);//end displayAllMarkers
-
-  function removePics(){
-    console.log(windowOpen);
-    $('#images').empty();
-    windowOpen = false;
-  }
 
   function openWindow(marker) { //open the GM tooltip
 
@@ -111,108 +98,122 @@ function mapModel(){
       self.infowindow = new google.maps.InfoWindow({
           content: '<div id="windowTool">'+ marker.title +'</div>'
       });
-      self.infowindow.open(map, marker);
-      randomPhoto(marker.title);
-
-
+      self.infowindow.open(canvasMap, marker);
+      photoModel(marker.title);
     };
   }
 
-  self.setMapOnAll = function(map){
-  // Sets the map on all markers in the array.
-    for (var i = 0; i < locations.length; i++) {
-      self.markerArray[i].setMap(map);
-    }
-  };//end setMapOnAll
-}//end mapModel
+  self.bounceMarker = function(markerName) {
 
-function searchModel(){
-  var self = this;
+      for(var i=0; i < self.markerArray.length;i++){
+        if(self.markerArray[i].title.toLowerCase().indexOf(markerName.toLowerCase()) >= 0) {
+          self.markerArray[i].setAnimation(google.maps.Animation.BOUNCE);
+        }else{
+          self.markerArray[i].setAnimation(null);
+        }
+      }
+  };
+  self.unBounceMarker = function(markerName) {
 
-  self.markers = ko.observableArray(locations.slice(0)); //array to hold the locations
+      for(var i=0; i < self.markerArray.length;i++){
+        if(self.markerArray[i].title.toLowerCase().indexOf(markerName.toLowerCase()) < 0) {
+
+        }
+      }
+  };
+
+}//end model
+
+function sidebarModel(){
+   var self = this;
+
+  self.places = ko.observableArray(locations.slice(0)); //array to hold the locations
   self.query =  ko.observable(''); //oberve the search field
-  self.showMap = new mapModel(); //create the map NOW
-  self.marker = null;
+
+  self.mapMdl = new mapModel();
+  self.mapMdl.setAllMarkers(canvasMap);//set all the markers on the map
 
   //search through the markers in the list
   self.query.subscribe(search = function(value) {
-    // remove all the current markers, which removes them from the view
-      self.markers.removeAll(); //remove all.. don't worry we will at them below
-      self.showMap.setMapOnAll(null); //also remove them from the map
+    self.places.removeAll(); // remove all the current places, which removes them from the view
+    self.mapMdl.setAllMarkers(null); //also remove the markers from the map
 
       for(var i=0; i < locations.length; i++) {
         //iterate through the locations to find the query value (the name of the location)
         if(locations[i].locationName.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
-          self.markers.push(locations[i]);
+          self.places.push(locations[i]);
 
-          self.marker = self.showMap.markerArray[i]; //get the marker data from the array in the mapModel
-          self.marker.setMap(map); //set the array
-
-          // if(self.markers.length>=3){ //when the user enter 3 characters we are bouncing the marker
-          //   marker.setAnimation(google.maps.Animation.BOUNCE); //animate the array...bounce bounce bounce
-          // }
+          self.marker = self.mapMdl.markerArray[i]; //get the marker data from the array in the mapModel
+          self.marker.setMap(canvasMap); //set the array
         }//end if
       }//end for
     // }//end else
   });//end search
 
-  selectedLoc =  ko.observable(0);
-  self.Lastlocation = ko.observable();
+  self.selectLocationStyle = function(element, domEl){
+       $(domEl.currentTarget).css('color', 'red');
+       self.mapMdl.bounceMarker(element.locationName);
+  };
+  self.selectLocationUndo = function(element, domEl){
+     $(domEl.currentTarget).css('color', 'black');
+     self.mapMdl.bounceMarker(element.locationName);
 
-  self.hoverOn = function(location){
-    console.log('yes we have a hover');
-    selectedLoc(1);
-    self.Lastlocation(location);
-     $( 'li#locationItems'  ).addClass( "btn-success");
   };
 
-self.hoverOff = function(){
-  console.log('just no');
-  selectedLoc(0);
-    //$( 'li#locationItems' ).addClass( "btn-success");
-    self.Lastlocation(' ');
-};
-}//end model
 
 
+
+}//end sidebarModel
 
 //When the users clicks a marker this function is run to display photo's below the map
-function randomPhoto(locationName){
-  var string = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=e291a839000711cc0d54015ed9636d6a&jsoncallback=?';
-  //var string = 'https://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?';
+function photoModel(locationName){
 
-  $.getJSON(string,
+  if (locationName !== null){
+    var string = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=e291a839000711cc0d54015ed9636d6a&jsoncallback=?';
+    //var string = 'https://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?';
 
-    {
-      tag: locationName,
-      text: locationName,
-      tagmode: 'any',
-      sort: 'interestingness-desc',
-      per_page : 20,
-      format: 'json'
+    $.getJSON(string,
 
-    }, function(data){
-      console.log(data);
-        for (var i=0; i<data.photos.photo.length; i++){
-          var photo = data.photos.photo[i];
-          var photo_img = 'https://farm'+ photo.farm +'.staticflickr.com/'+ photo.server +'/'+ photo.id +'_'+ photo.secret +'.jpg'+ '" >';
-          $('<img/>').attr('src', photo_img).appendTo('#images');
-        }//end for
-    }//end function
-  );//end JSON
+      {
+        tag: locationName,
+        text: locationName,
+        tagmode: 'any',
+        // sort: 'interestingness-desc',
+        sort: 'relevance',
+        dc:'title='+locationName,
+        per_page : 20,
+        format: 'json'
+
+      }, function(data){
+
+        console.log(data);
+        var firstPhoto = data.photos.photo[0];
+        var firstPhoto_img = 'https://farm'+ firstPhoto.farm +'.staticflickr.com/'+ firstPhoto.server +'/'+ firstPhoto.id +'_'+ firstPhoto.secret +'.jpg'+ '" >';
+        $('<img/>').attr('src', firstPhoto_img).attr('id', 'picP').appendTo('#windowTool');
+
+
+          for (var i=0; i<data.photos.photo.length; i++){
+            var randomPhoto = data.photos.photo[i];
+            var rand_photo_img = 'https://farm'+ randomPhoto.farm +'.staticflickr.com/'+ randomPhoto.server +'/'+ randomPhoto.id +'_'+ randomPhoto.secret +'.jpg'+ '" >';
+            $('<img/>').attr('src', rand_photo_img).appendTo('#photos');
+
+
+          }//end for
+      }//end function
+    );//end JSON
+  }else{
+
+  }
 }//end randomPhoto
 
-//load all models
-masterVM = {
-  vmMap : new mapModel(),
-  vmSearch : new searchModel(),
-//  vmPhoto : new photoModel(),
 
-};
+ko.applyBindings(mapModel, document.getElementById('map'));
+ko.applyBindings(sidebarModel, document.getElementById('sidebar'));
+ko.applyBindings(photoModel, document.getElementById('photos'));
 
-ko.applyBindings(masterVM);
 
-$(window).resize(function () { //function to override bootstrap height values
+//function to override bootstrap height values
+$(window).resize(function () {
     var h = $(window).height(),
         offsetTop = 60; // Calculate the top offset
 

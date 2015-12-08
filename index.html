@@ -39,7 +39,7 @@
 
   </head>
   <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -56,7 +56,7 @@
             <li><a href="#">About</a></li>
             <li><a href="#">Contact</a></li>
           </ul>
-          <p class="navbar-text navbar-right" data-bind="text: $root.vmSearch.Lastlocation"> </p>
+          <p class="navbar-text navbar-right" data-bind="text: sidebarModel.Lastlocation"> </p>
 
         </div><!--/.nav-collapse -->
       </div>
@@ -64,28 +64,26 @@
     <div class="container theme-showcase" role="main">
       <div class="row" id="top_row"></div>
       <div class="row">
-        <div class="col-sm-3 results-sidebar">
+        <div class="col-sm-3 sidebar">
           <form class="navbar-form">
             Search neighbourhood
-            <input  class="form-control" placeholder="Search…" type="search" data-bind="value: $root.vmSearch.query, valueUpdate: 'keyup'" autocomplete="off"/>
+            <input  class="form-control" placeholder="Search…" type="search" data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off"/>
 
           </form>
-          <ul class="locations list-group" data-bind="foreach: $root.vmSearch.markers">
-            <li class="list-group-item" id="locationItems"
-            data-bind="
-            text: $data.locationName,
-            css: 'locationItems',
-            event: {mouseover:  $root.vmSearch.hoverOn($data.locationName), mouseout: $root.vmSearch.hoverOff}
-
-
+          <ul class="locations list-group" data-bind="foreach: places">
+            <li class="list-group-item" id="location"
+            data-bind="text: locationName,
+              attr:{id: $index},
+              event:{ mouseover: selectLocationStyle, mouseout: selectLocationUndo }
 
             "></li>
           </ul>
         </div>
-        <div id="main_content" class="col-sm-9" style="display:block; height: 100%;">
-          <div id="map" class="col-sm-12"></div>
-          <div id="images"></div>
+        <div id="main_content" class="col-sm-9" style="display:block; height: 50%;">
+          <div id="map" class="col-sm-12" ></div>
         </div>
+        <div id="photos"></div>
+
       </div><!-- row -->
     </div><!-- End container -->
   </body>
