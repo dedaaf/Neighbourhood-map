@@ -79,6 +79,9 @@ function mapModel(){
       self.markerArray.push( self.marker);//store all the beautiful markers in an array
 
       self.marker.addListener('click', openWindow(self.marker));
+      self.marker.addListener('mouseover', bounceMarker(self.marker.title));
+
+
 
     }//end for
   }, self);//end displayAllMarkers
@@ -94,7 +97,6 @@ function mapModel(){
   function openWindow(marker) { //open the GM tooltip
 
     return function(){
-
       self.infowindow = new google.maps.InfoWindow({
           content: '<div id="windowTool">'+ marker.title +'</div>'
       });
@@ -103,8 +105,8 @@ function mapModel(){
     };
   }
 
-  self.bounceMarker = function(markerName) {
-
+  function bounceMarker (markerName) {
+     return function(){
       for(var i=0; i < self.markerArray.length;i++){
         if(self.markerArray[i].title.toLowerCase().indexOf(markerName.toLowerCase()) >= 0) {
           self.markerArray[i].setAnimation(google.maps.Animation.BOUNCE);
@@ -112,16 +114,8 @@ function mapModel(){
           self.markerArray[i].setAnimation(null);
         }
       }
-  };
-  self.unBounceMarker = function(markerName) {
-
-      for(var i=0; i < self.markerArray.length;i++){
-        if(self.markerArray[i].title.toLowerCase().indexOf(markerName.toLowerCase()) < 0) {
-
-        }
-      }
-  };
-
+    };
+  }
 }//end model
 
 function sidebarModel(){
@@ -146,20 +140,32 @@ function sidebarModel(){
           self.marker = self.mapMdl.markerArray[i]; //get the marker data from the array in the mapModel
           self.marker.setMap(canvasMap); //set the array
         }//end if
+
+
       }//end for
     // }//end else
   });//end search
 
-  self.selectLocationStyle = function(element, domEl){
+  selectLocationStyle = function(element, domEl){
        $(domEl.currentTarget).css('color', 'red');
-       self.mapMdl.bounceMarker(element.locationName);
+       bounceMarker(element.locationName);
   };
-  self.selectLocationUndo = function(element, domEl){
+  selectLocationUndo = function(element, domEl){
      $(domEl.currentTarget).css('color', 'black');
-     self.mapMdl.bounceMarker(element.locationName);
+     bounceMarker(element.locationName);
 
   };
 
+ function bounceMarker (markerName) {
+
+      for(var i=0; i < self.mapMdl.markerArray.length;i++){
+        if(self.mapMdl.markerArray[i].title.toLowerCase().indexOf(markerName.toLowerCase()) >= 0) {
+          self.mapMdl.markerArray[i].setAnimation(google.maps.Animation.BOUNCE);
+        }else{
+          self.mapMdl.markerArray[i].setAnimation(null);
+        }
+      }
+  }
 
 
 
