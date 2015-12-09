@@ -60,13 +60,17 @@ var canvasMap =  new google.maps.Map(document.getElementById('map'),
                   }
   );
 
-function mapModel(){
+var windowOpen =false; //check if window is open.
+
+function mapModel(){//model to display the markers on the map and to handle animation
   var self = this;
   self.marker = null;
 
   self.markerArray = [];
   self.displayAllMarkers = ko.computed(function(){
-
+  self.infowindow = new google.maps.InfoWindow({
+    content: '<div id="windowTool"></div>'
+  });
     //loop through the marker objects and print their Longitude and Latitude
     for(var i =0; i< locations.length; i++){
       var LatLng = {lat: locations[i].Lati, lng: locations[i].Long};
@@ -97,11 +101,12 @@ function mapModel(){
   function openWindow(marker) { //open the GM tooltip
 
     return function(){
-      self.infowindow = new google.maps.InfoWindow({
-          content: '<div id="windowTool">'+ marker.title +'</div>'
-      });
-      self.infowindow.open(canvasMap, marker);
-      photoModel(marker.title);
+      self.infowindow.close();//close other infowindows first
+      self.infowindow.open(canvasMap, marker); //open the window
+      $('#windowTool').empty(); //empty everything first
+      $('<div class="marker_title">'+marker.title+'</div>').appendTo('#windowTool'); //now add data
+      photoModel(marker.title); //get the photos from the internet
+
     };
   }
 
@@ -118,7 +123,7 @@ function mapModel(){
   }
 }//end model
 
-function sidebarModel(){
+function sidebarModel(){ //model to handle search queries
    var self = this;
 
   self.places = ko.observableArray(locations.slice(0)); //array to hold the locations
@@ -174,10 +179,10 @@ function sidebarModel(){
 //When the users clicks a marker this function is run to display photo's below the map
 function photoModel(locationName){
 
-  if (locationName !== null){
+  if (locationName !== undefined){ //only perform action if there is a location set
     var string = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=e291a839000711cc0d54015ed9636d6a&jsoncallback=?';
     //var string = 'https://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?';
-
+    var data;
     $.getJSON(string,
 
       {
@@ -190,28 +195,26 @@ function photoModel(locationName){
         per_page : 20,
         format: 'json'
 
-      }, function(data){
+      },
+      function(data){
 
-        console.log(data);
-        var firstPhoto = data.photos.photo[0];
-        var firstPhoto_img = 'https://farm'+ firstPhoto.farm +'.staticflickr.com/'+ firstPhoto.server +'/'+ firstPhoto.id +'_'+ firstPhoto.secret +'.jpg'+ '" >';
-        $('<img/>').attr('src', firstPhoto_img).attr('id', 'picP').appendTo('#windowTool');
+        if (data.stat !== 'fail'){//check if there is no failure
+          var firstPhoto = data.photos.photo[0];
+          var firstPhoto_img = 'https://farm'+ firstPhoto.farm +'.staticflickr.com/'+ firstPhoto.server +'/'+ firstPhoto.id +'_'+ firstPhoto.secret +'.jpg'+ '" >';
+          $('<img/>').attr('src', firstPhoto_img).attr('id', 'picP').appendTo('#windowTool');
 
 
           for (var i=0; i<data.photos.photo.length; i++){
             var randomPhoto = data.photos.photo[i];
             var rand_photo_img = 'https://farm'+ randomPhoto.farm +'.staticflickr.com/'+ randomPhoto.server +'/'+ randomPhoto.id +'_'+ randomPhoto.secret +'.jpg'+ '" >';
             $('<img/>').attr('src', rand_photo_img).appendTo('#photos');
-
-
           }//end for
+        }//end if
       }//end function
     );//end JSON
-  }else{
-
   }
-}//end randomPhoto
 
+}//end randomPhoto
 
 ko.applyBindings(mapModel, document.getElementById('map'));
 ko.applyBindings(sidebarModel, document.getElementById('sidebar'));
