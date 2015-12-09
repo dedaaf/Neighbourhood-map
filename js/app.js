@@ -101,6 +101,7 @@ function mapModel(){//model to display the markers on the map and to handle anim
   function openWindow(marker) { //open the GM tooltip
 
     return function(){
+      $('#photos').empty();
       self.infowindow.close();//close other infowindows first
       self.infowindow.open(canvasMap, marker); //open the window
       $('#windowTool').empty(); //empty everything first
@@ -186,12 +187,13 @@ function photoModel(locationName){
     $.getJSON(string,
 
       {
-        tag: locationName,
+      // tag: locationName,
         text: locationName,
         tagmode: 'any',
-        // sort: 'interestingness-desc',
-        sort: 'relevance',
-        dc:'title='+locationName,
+        sort: 'interestingness-desc',
+        //sort: 'relevance',
+        //dc:'title='+locationName,
+        has_geo: 1,
         per_page : 20,
         format: 'json'
 
@@ -224,7 +226,7 @@ ko.applyBindings(photoModel, document.getElementById('photos'));
 //function to override bootstrap height values
 $(window).resize(function () {
     var h = $(window).height(),
-        offsetTop = 60; // Calculate the top offset
+        offsetTop = 320; // Calculate the top offset
 
     $('#map').css('height', (h - offsetTop));
 }).resize();
