@@ -14,10 +14,8 @@
     <!-- custom style sheet -->
     <link rel="stylesheet" type="text/css" href="css/style.css">
 
-    <!--google maps-->
-     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKrvZMO5CHs_6aQ-tfTqA9_4jGaufmgKY&region=NL">
-  </script>
+
+
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script   type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"> </script>
@@ -29,8 +27,12 @@
     <script type="text/javascript" src="js/knockout-3.4.0.js"></script>
 
     <!--custom javascript - my own -->
-    <script type="text/javascript" src="js/app.js" async defer></script>
+    <script type="text/javascript" src="js/app_new.js" async defer></script>
 
+ <!--google maps-->
+     <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKrvZMO5CHs_6aQ-tfTqA9_4jGaufmgKY&amp;region=NL&amp;callback=mapObj.initMap">
+  </script>
     <!--some map styling-->
      <style type="text/css">
 
@@ -39,29 +41,12 @@
 
   </head>
   <body>
-    <nav class="navbar navbar navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-         <a class="navbar-brand " href="#">P5 - Neighbourhood Map Project</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="mailto:me@me">Contact</a></li>
-          </ul>
-          <p class="navbar-text navbar-right" data-bind="text: sidebarModel.Lastlocation"> </p>
+ <div class="container">
 
-        </div><!--/.nav-collapse -->
+      <div class="jumbotron">
+
+        <p>Please use the map or the search on the left to see interesting places in my neighbourhood</p>
       </div>
-    </nav>
-    <div class="container theme-showcase" role="main">
-      <div class="row" id="top_row"></div>
       <div class="row">
         <div class="col-sm-3 sidebar">
           <form class="navbar-form">
@@ -71,20 +56,36 @@
           </form>
           <ul class="locations list-group" data-bind="foreach: places">
             <li class="list-group-item" id="location"
-            data-bind="text: locationName,
-              attr:{id: $index},
-              event:{ mouseover: selectLocationStyle, mouseout: selectLocationUndo }
-
+            data-bind="text:locationName
+                     attr:{id: $index},
+              event:{ mouseover: sidebarObj.selectLocationStyle, mouseout: sidebarObj.selectLocationUndo }
             "></li>
           </ul>
         </div>
         <div id="main_content" class="col-sm-9" style="display:block; height: 50%;">
           <div id="map" class="col-sm-12" ></div>
         </div>
-        <div id="photos"></div>
-
       </div><!-- row -->
-    </div><!-- End container -->
+
+      <div class="row" >
+        <div class="col-sm-3 buttonbar" id="photos">
+          <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-primary">
+              <input type="checkbox" autocomplete="off"> Flickr Images
+            </label>
+            <label class="btn btn-primary">
+              <input type="checkbox" autocomplete="off"> Getty Images
+            </label>
+          </div>
+        </div>
+        <div class="col-sm-9 photo_row">
+          <div id="photosShow"></div>
+        </div>
+      </div><!-- row -->
+      </div>
+
+
+
   </body>
 
 
