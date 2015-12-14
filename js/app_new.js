@@ -122,15 +122,27 @@ mapObj.openWindow = function(marker) { //open the GM tooltip
 };
 
 mapObj.bounceMarker = function(markerName) {
+    //bounce the marker. Return statement is used. to select the correct marker
     var self = this;
-     return function(){
-      for(var i=0; i < self.markerArray.length;i++){
-        if(self.markerArray[i].title.toLowerCase().indexOf(markerName.toLowerCase()) >= 0) {
-          self.markerArray[i].setAnimation(google.maps.Animation.BOUNCE);
-        }else{
-          self.markerArray[i].setAnimation(null);
+    return function(){
+        for(var i=0; i < self.markerArray.length;i++){
+            if(self.markerArray[i].title.toLowerCase().indexOf(markerName.toLowerCase()) >= 0) {
+                bounce(self.markerArray[i]);
+            }else{
+                unbounce(self.markerArray[i]);
+
+            }
         }
-      }
+        function bounce(marker){
+            marker.setAnimation(google.maps.Animation.BOUNCE);
+            //bounce the actual marker and unbounce it after a couple of sec.
+            window.setTimeout(function(){
+                unbounce(marker);
+            }, 2500);
+        }
+        function unbounce(marker){
+            marker.setAnimation(null);
+        }
     };
 };
 
@@ -166,16 +178,11 @@ sidebarObj.searchLoc = function(){ //model to handle search queries
       }//end for
     // }//end else
   });//end search
-
-  //self.mapMdl = new mapModel();
-  //self.mapMdl.setAllMarkers(canvasMap);//set all the markers on the map
-
-  //search through the markers in the list
-
 };//end sidebarModel
-sidebarObj.searchLoc();
 
-sidebarObj.selectLocationStyle = function(element, domEl){
+sidebarObj.searchLoc(); //activate the searchLoc function
+
+sidebarObj.selectLocationStyle = function(element, domEl){ //perform some styling.
     $(domEl.currentTarget).css('color', 'red');
     $(domEl.currentTarget).css( 'cursor', 'pointer' );
     sidebarObj.bounceMarker(element.locationName);
@@ -186,14 +193,22 @@ sidebarObj.selectLocationUndo = function(element, domEl){
      sidebarObj.bounceMarker(element.locationName);
 };
 
-sidebarObj.bounceMarker = function(markerName) {
-
+sidebarObj.bounceMarker = function(markerName) { //bounce marker if the user hovers over the name
     for(var i=0; i < mapObj.markerArray.length;i++){
         if(mapObj.markerArray[i].title.toLowerCase().indexOf(markerName.toLowerCase()) >= 0) {
-            mapObj.markerArray[i].setAnimation(google.maps.Animation.BOUNCE);
+             bounce(mapObj.markerArray[i]);
         }else{
-            mapObj.markerArray[i].setAnimation(null);
+            unbounce(mapObj.markerArray[i]);
         }
+    }
+    function bounce(marker){ //animate the marker using googles functions. Also unbounce after a couple of sec
+        marker.setAnimation(google.maps.Animation.BOUNCE);
+        window.setTimeout(function(){
+            unbounce(marker);
+        }, 2500);
+    }
+    function unbounce(marker){
+        marker.setAnimation(null);
     }
 };
 

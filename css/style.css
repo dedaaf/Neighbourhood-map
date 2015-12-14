@@ -12,7 +12,7 @@ html, body {
   height: 50%;
 }
 
-#photos img{
+#photosShow img{
   max-width:100px;
   heigth:100px;
 }
@@ -22,9 +22,10 @@ html, body {
   color:#333;
 }
 
-#windowTool{
-  width:300px;
-  height:300px;
+
+#windowTool > img{
+  max-height: 250px;
+  max-width: 250px;
 }
 #picP{
   width:100%;
