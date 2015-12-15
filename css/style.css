@@ -22,7 +22,9 @@ html, body {
   color:#333;
 }
 
-
+#flickrPhotos >img{
+  width: 170px;
+}
 #windowTool > img{
   max-height: 250px;
   max-width: 250px;

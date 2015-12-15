@@ -17,26 +17,6 @@
 
 
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script   type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"> </script>
-
-
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
-    <!--KNOCKOUT -->
-    <script type="text/javascript" src="js/knockout-3.4.0.js"></script>
-
-    <!--custom javascript - my own -->
-    <script type="text/javascript" src="js/app_new.js" async defer></script>
-
- <!--google maps-->
-     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKrvZMO5CHs_6aQ-tfTqA9_4jGaufmgKY&amp;region=NL&amp;callback=mapObj.initMap">
-  </script>
-    <!--some map styling-->
-     <style type="text/css">
-
-    </style>
 
 
   </head>
@@ -67,25 +47,48 @@
         </div>
       </div><!-- row -->
 
-      <div class="row" >
-        <div class="col-sm-3 buttonbar" id="photos">
-          <div class="btn-group" data-toggle="buttons">
+      <div class="row" data-bind="with: photoObj">
+        <div class="col-sm-3 buttonbar" >
+          <div class="btn-group" >
             <label class="btn btn-primary">
-              <input type="checkbox" autocomplete="off"> Flickr Images
+              <input type="checkbox" autocomplete="off" data-bind="checked:
+              showFlickr" > Flickr Images
             </label>
-            <label class="btn btn-primary">
-              <input type="checkbox" autocomplete="off"> Getty Images
+           <label class="btn btn-primary">
+              <input type="checkbox" autocomplete="off"  data-bind="checked:
+              showGetty"> Getty Images
             </label>
+
           </div>
         </div>
-        <div class="col-sm-9 photo_row">
-          <div id="photosShow"></div>
+        <div class="col-sm-9 photo_row"  >
+          <div  data-bind="visible: showFlickr" >
+            <div id="flickrPhotos"></div>
+          </div>
+          <div  data-bind="visible: showGetty" >
+            <div id="gettyPhotos"></div>
+          </div>
         </div>
       </div><!-- row -->
-      </div>
+</div>
 
 
+ <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script   type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"> </script>
 
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+    <!--KNOCKOUT -->
+    <script type="text/javascript" src="js/knockout-3.4.0.js"></script>
+
+    <!--custom javascript - my own -->
+    <script type="text/javascript" src="js/app_new.js" async defer></script>
+
+ <!--google maps-->
+     <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKrvZMO5CHs_6aQ-tfTqA9_4jGaufmgKY&amp;region=NL&amp;callback=mapObj.initMap">
+  </script>
   </body>
 
 

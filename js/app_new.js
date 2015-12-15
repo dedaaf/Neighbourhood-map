@@ -1,6 +1,6 @@
 var locations = [
   {
-    locationName: 'Scheepsvaartmuseum',
+    locationName: 'Scheepvaartmuseum',
     streetName: 'Kattenburgerplein 1',
     zipCode: '1018 KK',
     City: 'Amsterdam',
@@ -20,7 +20,7 @@ var locations = [
     id: 'Artis'
   },
   {
-    locationName: 'Amsterdam Roest',
+    locationName: 'Amsterdam, Roest',
     streetName: 'Jacob Bontiusplaats 1',
     zipCode: '1018 PL',
     City: 'Amsterdam',
@@ -213,26 +213,33 @@ sidebarObj.bounceMarker = function(markerName) { //bounce marker if the user hov
 };
 
 //When the users clicks a marker this function is run to display photo's below the map
-var photoObj = {};
+var photoObj = {
+    showFlickr: ko.observable(true),
+    showGetty: ko.observable(false),
+};
 
 photoObj.displayPhoto = function (locationName){
     var self = this;
-    $('#photosShow').empty(); //empty all the previous photo's
+
 
     if (locationName === undefined){
        return false;
-    }else{//only perform action if there is a location set
+    }
+    else{//only perform action if there is a location set
 
-            photoObj.flickr(locationName);
+                photoObj.flickr(locationName);
+               // photoObj.gettyImg(locationName);
 
         }
 };
 
 
 photoObj.flickr = function(locationName){
+    $('#flickrPhotos').empty(); //empty all the previous photo's
     var string = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=e291a839000711cc0d54015ed9636d6a&jsoncallback=?';
         //var string = 'https://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?';
     var data;
+
     $.getJSON(string,
         {
         // tag: locationName,
@@ -242,7 +249,7 @@ photoObj.flickr = function(locationName){
         //sort: 'relevance',
         //dc:'title='+locationName,
         has_geo: 1,
-        //per_page : 20,
+        per_page : 20,
         extras: 'description',
         format: 'json'
         },
@@ -258,13 +265,11 @@ photoObj.flickr = function(locationName){
                if(  data.photos.photo[i].title.toLowerCase().indexOf( locationName.toLowerCase() ) >= 0 ){
                   photoWithTitle = data.photos.photo[i];
                   title_in_photo_img = 'https://farm'+ photoWithTitle.farm +'.staticflickr.com/'+ photoWithTitle.server +'/'+ photoWithTitle.id +'_'+ photoWithTitle.secret +'.jpg'+ '" >';
-                  $('<img/>').attr('src', title_in_photo_img).appendTo('#photosShow');
+                  $('<img/>').attr('src', title_in_photo_img).appendTo('#flickrPhotos');
 
                   picsArray.push(photoWithTitle);
                 }
               }
-
-              console.log(picsArray);
               for(var y=0; y<picsArray.length; y++){
                 if( picsArray[y].title.toLowerCase() == locationName.toLowerCase() ){
                   var photoWindow = picsArray[y];
@@ -277,10 +282,58 @@ photoObj.flickr = function(locationName){
     );//end JSON
 };
 
-photoObj.gettyImg = function(){
+photoObj.gettyImg = function(locationName){
+    $('#gettyPhotos').empty(); //empty all the previous photo's
+    var locName = locationName.toLowerCase();
 
+    var string = "https://api.gettyimages.com/v3/search/images?phrase="+locName;
+
+    $.ajax({
+      type: 'GET',
+      url: string,
+      headers: {
+        "Api-Key":"vss3dkv8ynztu6zud3wsgeed"
+        // more as you need
+      },
+
+    }).done(function( data ) {
+        console.log(data);
+
+        for(var y=0; y< data.images.length;y++){
+            var imgG =data.images[y];
+            var imgCaption = imgG.caption;
+            console.log(imgCaption);
+
+            if(imgCaption !==null){
+                if( imgCaption.indexOf( locationName) >= 0 ){
+                    console.log(data.images[y]);
+                    var imgGetty = data.images[y];
+                    var imgURL= imgGetty.display_sizes[0].uri;
+                    console.log('imgURL',imgURL);
+
+                    // var imgString = "https://api.gettyimages.com:443/v3/images/"+imgIds;
+                    $('<img/>').attr('src', imgURL).attr('id', 'gettyIMG').appendTo('#gettyPhotos');
+                }
+            }
+        }
+  });
+
+
+
+
+    // $.getJSON(string,
+    //     {
+    //         'Api-Key': 'vss3dkv8ynztu6zud3wsgeed',
+    //         fields: 'title',
+    //         phrase: locName,
+    //     },
+    //     function(data){
+    //         console.log(data);
+    //     }
+    // );
 };
+
 
 ko.applyBindings(mapObj, document.getElementById('map'));
 ko.applyBindings(sidebarObj, document.getElementById('sidebar'));
-ko.applyBindings(photoObj, document.getElementById('photosShow'));
+//ko.applyBindings(photoObj, document.getElementById('photos'));
