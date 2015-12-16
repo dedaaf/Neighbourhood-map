@@ -30,7 +30,7 @@ var locations = [
     id: 'Roest'
   },
    {
-    locationName: 'BurgerMeester',
+    locationName: 'Restaurant BurgerMeester',
     streetName: 'Plantage Kerklaan 37',
     zipCode: '1018 CV',
     City: 'Amsterdam',
@@ -80,7 +80,8 @@ mapObj.createMarkers = function(){
             var LatLng = {lat: locations[i].Lati, lng: locations[i].Long};
             self.marker = new google.maps.Marker({//create the markers
                 position: LatLng,
-                title: locations[i].locationName
+                title: locations[i].locationName,
+                description: locations[i].description
             });
             self.markerArray.push( self.marker);//store all the beautiful markers in an array
             self.marker.addListener('click', mapObj.openWindow(self.marker));
@@ -183,14 +184,42 @@ sidebarObj.searchLoc = function(){ //model to handle search queries
 sidebarObj.searchLoc(); //activate the searchLoc function
 
 sidebarObj.selectLocationStyle = function(element, domEl){ //perform some styling.
-    $(domEl.currentTarget).css('color', 'red');
-    $(domEl.currentTarget).css( 'cursor', 'pointer' );
+    var current = domEl.currentTarget;
+    $(current).css('color', 'red');
+    $(current).css( 'cursor', 'pointer' );
     sidebarObj.bounceMarker(element.locationName);
+
+    $( current ).click(function() {
+        sidebarObj.checkMarker(element.locationName);
+    });
+
 };
 
 sidebarObj.selectLocationUndo = function(element, domEl){
      $(domEl.currentTarget).css('color', 'black');
      sidebarObj.bounceMarker(element.locationName);
+};
+
+sidebarObj.checkMarker = function(locationName){
+    var locName = locationName;
+     for(var i=0; i < mapObj.markerArray.length;i++){
+        if( mapObj.markerArray[i].title.toLowerCase().indexOf(locName.toLowerCase() ) >= 0) {
+
+             sidebarObj.openWindow(mapObj.markerArray[i]);
+             //console.log(mapObj.markerArray[i]);
+
+        }
+    }
+};
+
+sidebarObj.openWindow = function(marker) { //open the GM tooltip
+    var map = mapObj;
+
+    map.infowindow.close();//close other infowindows first
+    map.infowindow.open(map.canvasMap, marker); //open the window
+     $('#windowTool').remove('img');
+    $('<div class="marker_title">'+marker.title+'</div>').appendTo('#windowTool'); //now add data
+    photoObj.displayPhoto(marker.title); //get the photos from the internet
 };
 
 sidebarObj.bounceMarker = function(markerName) { //bounce marker if the user hovers over the name
@@ -219,21 +248,21 @@ var photoObj = {
 };
 
 photoObj.displayPhoto = function (locationName){
-    var self = this;
-
 
     if (locationName === undefined){
        return false;
     }
     else{//only perform action if there is a location set
 
-                photoObj.flickr(locationName);
-               // photoObj.gettyImg(locationName);
+        var picsArray = photoObj.flickr(locationName);
+        return picsArray;
+        //photoObj.gettyImg(locationName);
 
         }
 };
 
 
+//
 photoObj.flickr = function(locationName){
     $('#flickrPhotos').empty(); //empty all the previous photo's
     var string = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=e291a839000711cc0d54015ed9636d6a&jsoncallback=?';
@@ -254,29 +283,29 @@ photoObj.flickr = function(locationName){
         format: 'json'
         },
         function(data){
-            console.log(data);
             if (data.stat !== 'fail'){//check if there is no failure
 
-              var photoWithTitle ;
-              var title_in_photo_img;
-              var picsArray = [];
+                var picsArray = [];
+                for(var i =0; i< data.photos.photo.length;i++){
 
-              for (var i=0; i<data.photos.photo.length; i++){
-               if(  data.photos.photo[i].title.toLowerCase().indexOf( locationName.toLowerCase() ) >= 0 ){
-                  photoWithTitle = data.photos.photo[i];
-                  title_in_photo_img = 'https://farm'+ photoWithTitle.farm +'.staticflickr.com/'+ photoWithTitle.server +'/'+ photoWithTitle.id +'_'+ photoWithTitle.secret +'.jpg'+ '" >';
-                  $('<img/>').attr('src', title_in_photo_img).appendTo('#flickrPhotos');
+                    //check if the locationName is in the title && in the description. If so, it's a valid photo
+                    var title_check =  data.photos.photo[i].title.toLowerCase().indexOf( locationName.toLowerCase() );
+                    var decript_check = data.photos.photo[i].description._content.indexOf( locationName.toLowerCase() ) ;
 
-                  picsArray.push(photoWithTitle);
+                    if(title_check || decript_check >=0){
+                        var photosChecked = data.photos.photo[i];
+                           var photoIsGo = 'https://farm'+ photosChecked.farm +'.staticflickr.com/'+ photosChecked.server +'/'+ photosChecked.id +'_'+ photosChecked.secret +'.jpg'+ '" >';
+                        $('<img/>').attr('src', photoIsGo).appendTo('#flickrPhotos');
+                        picsArray.push(photosChecked);//push photos in an array again so that we can pick them below
+
+                    }
                 }
-              }
-              for(var y=0; y<picsArray.length; y++){
-                if( picsArray[y].title.toLowerCase() == locationName.toLowerCase() ){
-                  var photoWindow = picsArray[y];
-                  var firstPhoto_img = 'https://farm'+ photoWindow.farm +'.staticflickr.com/'+ photoWindow.server +'/'+ photoWindow.id +'_'+ photoWindow.secret +'.jpg'+ '" >';
-                  return $('<img/>').attr('src', firstPhoto_img).attr('id', 'picP').appendTo('#windowTool');
-                }
-              }
+                var photoWithTitle ;
+                var title_in_photo_img;
+                var randPic = picsArray[Math.floor(Math.random() * picsArray.length)];//randomizer
+                var phto_win = randPic;
+                var firstPhoto_img = 'https://farm'+ phto_win.farm +'.staticflickr.com/'+ phto_win.server +'/'+ phto_win.id +'_'+ phto_win.secret +'.jpg'+ '" >';
+                $('<img/>').attr('src', firstPhoto_img).attr('id', 'picP').appendTo('#windowTool');
             }//end fail check
         }//end function
     );//end JSON
@@ -297,19 +326,15 @@ photoObj.gettyImg = function(locationName){
       },
 
     }).done(function( data ) {
-        console.log(data);
 
         for(var y=0; y< data.images.length;y++){
             var imgG =data.images[y];
             var imgCaption = imgG.caption;
-            console.log(imgCaption);
 
             if(imgCaption !==null){
                 if( imgCaption.indexOf( locationName) >= 0 ){
-                    console.log(data.images[y]);
                     var imgGetty = data.images[y];
                     var imgURL= imgGetty.display_sizes[0].uri;
-                    console.log('imgURL',imgURL);
 
                     // var imgString = "https://api.gettyimages.com:443/v3/images/"+imgIds;
                     $('<img/>').attr('src', imgURL).attr('id', 'gettyIMG').appendTo('#gettyPhotos');
@@ -317,20 +342,6 @@ photoObj.gettyImg = function(locationName){
             }
         }
   });
-
-
-
-
-    // $.getJSON(string,
-    //     {
-    //         'Api-Key': 'vss3dkv8ynztu6zud3wsgeed',
-    //         fields: 'title',
-    //         phrase: locName,
-    //     },
-    //     function(data){
-    //         console.log(data);
-    //     }
-    // );
 };
 
 
