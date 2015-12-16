@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,63 +19,65 @@
 
 
 
+</head>
 
-  </head>
-  <body>
- <div class="container">
+<body>
+    <div class="container">
 
-      <div class="jumbotron">
+        <div class="jumbotron">
 
-        <p>Please use the map or the search on the left to see interesting places in my neighbourhood</p>
-      </div>
-      <div class="row">
-        <div class="col-sm-3 sidebar">
-          <form class="navbar-form">
-            Search neighbourhood
-            <input  class="form-control" placeholder="Search…" type="search" data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off"/>
+            <p>Please use the map or the search on the left to see interesting places in my neighbourhood</p>
+        </div>
+        <div class="row">
+            <div class="col-sm-3 sidebar">
+                <form class="navbar-form">
+                    Search neighbourhood
+                    <input class="form-control" placeholder="Search…" type="search" data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off" />
 
-          </form>
-          <ul class="locations list-group" data-bind="foreach: places">
-            <li class="list-group-item" id="location"
-            data-bind="text:locationName
+                </form>
+                <ul class="locations list-group" data-bind="foreach: places">
+                    <li class="list-group-item" id="location" data-bind="text:locationName
                      attr:{id: $index},
               event:{ mouseover: sidebarObj.selectLocationStyle, mouseout: sidebarObj.selectLocationUndo}
             "></li>
-          </ul>
+                </ul>
+            </div>
+            <div id="main_content" class="col-sm-9" style="display:block; height: 50%;">
+                <div id="map" class="col-sm-12"></div>
+            </div>
         </div>
-        <div id="main_content" class="col-sm-9" style="display:block; height: 50%;">
-          <div id="map" class="col-sm-12" ></div>
-        </div>
-      </div><!-- row -->
+        <!-- row -->
 
-      <div class="row" data-bind="with: photoObj">
-        <div class="col-sm-3 buttonbar" >
-          <div class="btn-group" >
-            <label class="btn btn-primary">
-              <input type="checkbox" autocomplete="off" data-bind="checked:
-              showFlickr" > Flickr Images
-            </label>
-           <label class="btn btn-primary">
-              <input type="checkbox" autocomplete="off"  data-bind="checked:
+        <div class="row" data-bind="with: photoObj">
+            <div class="col-sm-3 buttonbar">
+                <div class="btn-group">
+                    <label class="btn btn-primary">
+                        <input type="checkbox" autocomplete="off" data-bind="checked:
+              showFlickr"> Flickr Images
+                    </label>
+                    <label class="btn btn-primary">
+                        <input type="checkbox" autocomplete="off" data-bind="checked:
               showGetty"> Getty Images
-            </label>
+                    </label>
 
-          </div>
+                </div>
+            </div>
+            <div class="col-sm-9 photo_row">
+                <div data-bind="visible: showFlickr">
+                    <div id="flickrPhotos"></div>
+                </div>
+                <div data-bind="visible: showGetty">
+                    <div id="gettyPhotos"></div>
+                </div>
+            </div>
         </div>
-        <div class="col-sm-9 photo_row"  >
-          <div  data-bind="visible: showFlickr" >
-            <div id="flickrPhotos"></div>
-          </div>
-          <div  data-bind="visible: showGetty" >
-            <div id="gettyPhotos"></div>
-          </div>
-        </div>
-      </div><!-- row -->
-</div>
+        <!-- row -->
+    </div>
 
 
- <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script   type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"> </script>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
+    </script>
 
 
     <!-- Latest compiled and minified JavaScript -->
@@ -85,11 +88,10 @@
     <!--custom javascript - my own -->
     <script type="text/javascript" src="js/app_new.js" async defer></script>
 
- <!--google maps-->
-     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKrvZMO5CHs_6aQ-tfTqA9_4jGaufmgKY&amp;region=NL&amp;callback=mapObj.initMap">
-  </script>
-  </body>
+    <!--google maps-->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKrvZMO5CHs_6aQ-tfTqA9_4jGaufmgKY&amp;region=NL&amp;callback=mapObj.initMap">
+    </script>
+</body>
 
 
 </html>
