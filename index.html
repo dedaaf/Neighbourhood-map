@@ -16,6 +16,8 @@
     <link rel="stylesheet" type="text/css" href="css/style.css">
 
 
+    <!--Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 
 
 
@@ -28,12 +30,32 @@
 
             <p>Please use the map or the search on the left to see interesting places in my neighbourhood</p>
         </div>
+        <div class="row" data-bind="with: photoObj">
+          <div class="col-sm-3 buttonbar">
+
+          </div>
+          <div class="col-sm-9 buttonbar" style="margin-bottom:5px">
+           <h4 style="display:inline-block" >Choose photos from:</h4 >
+              <div class="btn-group" >
+                <label class="btn btn-primary">
+                    <input type="checkbox" autocomplete="off" data-bind="checked: showFlickr"> Flickr Images
+                </label>
+                <label class="btn btn-primary">
+                    <input type="checkbox" autocomplete="off" data-bind="checked: showGetty"> Getty Images
+                </label>
+              </div>
+          </div>
+        </div>
         <div class="row">
             <div class="col-sm-3 sidebar">
                 <form class="navbar-form">
-                    Search neighbourhood
-                    <input class="form-control" placeholder="Search…" type="search" data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off" />
-
+                  <label for="search_f">Search neighbourhood</label>
+                  <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon2">
+                      <i class="fa fa-search"></i>
+                    </span>
+                    <input class="form-control" id="search_f" placeholder="Search…" type="search" data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off" />
+                  </div>
                 </form>
                 <ul class="locations list-group" data-bind="foreach: places">
                     <li class="list-group-item" id="location" data-bind="text:locationName
@@ -48,21 +70,9 @@
         </div>
         <!-- row -->
 
-        <div class="row" data-bind="with: photoObj">
-            <div class="col-sm-3 buttonbar">
-                <div class="btn-group">
-                    <label class="btn btn-primary">
-                        <input type="checkbox" autocomplete="off" data-bind="checked:
-              showFlickr"> Flickr Images
-                    </label>
-                    <label class="btn btn-primary">
-                        <input type="checkbox" autocomplete="off" data-bind="checked:
-              showGetty"> Getty Images
-                    </label>
 
-                </div>
-            </div>
-            <div class="col-sm-9 photo_row">
+          <div class="row" data-bind="with: photoObj">
+            <div class="col-sm-12 photo_row">
                 <div data-bind="visible: showFlickr">
                     <div id="flickrPhotos"></div>
                 </div>
