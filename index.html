@@ -1,95 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+  <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="1018 Locations">
     <meta name="author" content="David van Oudheusden">
     <title>P5 - Neighbourhood Map Project</title>
-
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
-
     <!-- custom style sheet -->
     <link rel="stylesheet" type="text/css" href="css/style.css">
-
-
     <!--Font Awesome -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  </head>
 
-
-
-</head>
-
-<body>
+  <body>
     <div class="container">
-
-        <div class="jumbotron">
-
-            <p>Please use the map or the search on the left to see interesting places in my neighbourhood</p>
+      <div class="row">
+        <div class="page-header">
+          <h1><a class="navbar-brand" href="./index.html">1018, Amsterdam</a><small> | Check out interesting places in the neighbourhood</small></h1>
         </div>
-        <div class="row" data-bind="with: photoObj">
-          <div class="col-sm-3 buttonbar">
-
-          </div>
-          <div class="col-sm-9 buttonbar" style="margin-bottom:5px">
-           <h4 style="display:inline-block" >Choose photos from:</h4 >
-              <div class="btn-group" >
-                <label class="btn btn-primary">
-                    <input type="checkbox" autocomplete="off" data-bind="checked: showFlickr"> Flickr Images
-                </label>
-                <label class="btn btn-primary">
-                    <input type="checkbox" autocomplete="off" data-bind="checked: showGetty"> Getty Images
-                </label>
+      </div>
+      <div class="row" data-bind="with: photoObj">
+        <div class="col-sm-3 buttonbar">
+        </div>
+        <div class="col-sm-9 buttonbar" style="margin-bottom:5px">
+         <h4 style="display:inline-block" >Choose photos from:</h4 >
+            <div class="btn-group" >
+              <label class="btn btn-primary">
+                  <input type="checkbox" autocomplete="off" data-bind="checked: showFlickr"> Flickr Images
+              </label>
+              <label class="btn btn-primary">
+                  <input type="checkbox" autocomplete="off" data-bind="checked: showGetty"> Getty Images
+              </label>
+            </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3 sidebar">
+            <form class="navbar-form">
+              <label for="search_f">Search neighbourhood</label>
+              <div class="input-group">
+                <span class="input-group-addon" id="basic-addon2">
+                  <i class="fa fa-search"></i>
+                </span>
+                <input class="form-control" id="search_f" placeholder="Search…" type="search" data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off" />
               </div>
-          </div>
+            </form>
+          <ul class="locations list-group" data-bind="foreach: places">
+            <li class="list-group-item" id="location" data-bind="text:locationName
+                attr:{id: $index},
+                event:{ mouseover: sidebarObj.selectLocationStyle, mouseout: sidebarObj.selectLocationUndo}"></li>
+          </ul>
         </div>
-        <div class="row">
-            <div class="col-sm-3 sidebar">
-                <form class="navbar-form">
-                  <label for="search_f">Search neighbourhood</label>
-                  <div class="input-group">
-                    <span class="input-group-addon" id="basic-addon2">
-                      <i class="fa fa-search"></i>
-                    </span>
-                    <input class="form-control" id="search_f" placeholder="Search…" type="search" data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off" />
+        <div id="main_content" class="col-sm-9" style="display:block; height: 50%;">
+            <div id="map" class="col-sm-12"></div>
+        </div>
+      </div>
+      <div class="row" data-bind="with: photoObj">
+        <div class="col-sm-3 buttonbar">
+        </div>
+        <div class="col-sm-9 photo_row" style="margin-top:5px;">
+
+            <div data-bind="visible: showFlickr">
+
+                  <div class="row">
+                    <div class="col-xs-6 col-md-3">
+                      <div class="thumbnail" >
+                        <div id="flickrPhotos">
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </form>
-                <ul class="locations list-group" data-bind="foreach: places">
-                    <li class="list-group-item" id="location" data-bind="text:locationName
-                     attr:{id: $index},
-              event:{ mouseover: sidebarObj.selectLocationStyle, mouseout: sidebarObj.selectLocationUndo}
-            "></li>
-                </ul>
             </div>
-            <div id="main_content" class="col-sm-9" style="display:block; height: 50%;">
-                <div id="map" class="col-sm-12"></div>
+            <div data-bind="visible: showGetty">
+                <div id="gettyPhotos"></div>
             </div>
         </div>
-        <!-- row -->
-
-
-          <div class="row" data-bind="with: photoObj">
-            <div class="col-sm-12 photo_row">
-                <div data-bind="visible: showFlickr">
-                    <div id="flickrPhotos"></div>
-                </div>
-                <div data-bind="visible: showGetty">
-                    <div id="gettyPhotos"></div>
-                </div>
-            </div>
-        </div>
-        <!-- row -->
+      </div>
     </div>
-
-
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
     </script>
-
-
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
     <!--KNOCKOUT -->
@@ -101,7 +95,5 @@
     <!--google maps-->
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKrvZMO5CHs_6aQ-tfTqA9_4jGaufmgKY&amp;region=NL&amp;callback=mapObj.initMap">
     </script>
-</body>
-
-
+  </body>
 </html>
