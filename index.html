@@ -52,7 +52,7 @@
           <ul class="locations list-group" data-bind="foreach: places">
             <li class="list-group-item" id="location" data-bind="text:locationName
                 attr:{id: $index},
-                event:{ mouseover: sidebarObj.selectLocationStyle, mouseout: sidebarObj.selectLocationUndo}"></li>
+                event:{ mouseover: sidebarObj.selectLocation, mouseout: sidebarObj.selectLocationUndo, click: sidebarObj.openWin}"></li>
           </ul>
         </div>
         <div id="main_content" class="col-sm-9" style="display:block; height: 50%;">
@@ -62,25 +62,26 @@
       <div class="row" data-bind="with: photoObj">
         <div class="col-sm-3 buttonbar">
         </div>
-        <div class="col-sm-9 photo_row" style="margin-top:5px;">
-
-            <div data-bind="visible: showFlickr">
-
-                  <div class="row">
-                    <div class="col-xs-6 col-md-3">
-                      <div class="thumbnail" >
-                        <div id="flickrPhotos">
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+        <div class="col-sm-9 " style="margin-top:5px;">
+          <div data-bind="visible: showFlickr">
+            <div data-bind="if: errorImg">
+              <span class="label label-danger"> Error occured retrieving photos</span>
             </div>
-            <div data-bind="visible: showGetty">
-                <div id="gettyPhotos"></div>
+            <div class="showPics" id="flickrPhotos" data-bind="foreach: urls_flickr ">
+              <img class="thumbnail" data-bind="attr: {src: url}" />
+          </div>
+          </div>
+          <div data-bind="visible: showGetty">
+            <div data-bind="if: noImg">
+              <span class="label label-warning"> No pictures from this location. City pics are shown...</span>
             </div>
-        </div>
-      </div>
-    </div>
+            <div class="showPics" id="gettyPhotos" data-bind="foreach: urls_getty " >
+              <img class="thumbnail" data-bind="attr: {src: url}" />
+            </div>
+          </div>
+        </div><!-- showPics -->
+      </div><!-- row -->
+    </div><!-- container -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
     </script>
